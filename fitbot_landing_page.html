@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ===================== SEO & META ===================== -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fitbot — Stronger, smarter, consistently.</title>
+  <meta name="description" content="Fitbot is an AI-powered coach and workout tracker that plans your sessions, tracks your lifts, and adapts to your recovery—so progress becomes automatic." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Fitbot — Stronger, smarter, consistently." />
+  <meta property="og:description" content="AI coach & workout tracker with adaptive plans, natural-language logging, and wearable sync." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="#" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Fitbot — Stronger, smarter, consistently." />
+  <meta name="twitter:description" content="AI coach & workout tracker with adaptive plans and NL logging." />
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Fitbot",
+    "url": "#",
+    "logo": "#",
+    "sameAs": ["#"]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Fitbot",
+    "brand": {"@type": "Brand", "name": "Fitbot"},
+    "description": "AI-powered coach and workout tracker.",
+    "url": "#",
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "USD",
+      "lowPrice": "0",
+      "highPrice": "12.99",
+      "offerCount": "2"
+    }
+  }
+  </script>
+
+  <!-- ===================== STYLES ===================== -->
+  <style>
+    /* ===== CSS Variables & Theming ===== */
+    :root {
+      --bg: #0b0c10;
+      --text: #0e1116;
+      --muted: #6b7280;
+      --card: rgba(255, 255, 255, 0.7);
+      --edge: rgba(0,0,0,0.08);
+      --accent: #6ee7b7; /* mint */
+      --accent-2: #60a5fa; /* blue */
+      --radius: 12px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 20px rgba(0,0,0,0.10);
+      --shadow-lg: 0 20px 40px rgba(0,0,0,0.18);
+      --glass: saturate(140%) blur(16px);
+      --ring: 2px solid transparent;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0f14;
+        --text: #e5e7eb;
+        --muted: #9aa3af;
+        --card: rgba(20, 24, 30, 0.6);
+        --edge: rgba(255,255,255,0.06);
+        --accent: #34d399;
+        --accent-2: #3b82f6;
+      }
+    }
+    [data-theme="light"] {
+      --bg: #f7f9fb;
+      --text: #0e1116;
+      --muted: #6b7280;
+      --card: rgba(255,255,255,0.7);
+      --edge: rgba(0,0,0,0.08);
+      --accent: #22c55e;
+      --accent-2: #3b82f6;
+    }
+    [data-theme="dark"] {
+      --bg: #0b0f14;
+      --text: #e5e7eb;
+      --muted: #9aa3af;
+      --card: rgba(20, 24, 30, 0.6);
+      --edge: rgba(255,255,255,0.06);
+      --accent: #34d399;
+      --accent-2: #3b82f6;
+    }
+
+    /* ===== Base ===== */
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif;
+      line-height: 1.5; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+
+    /* Fluid type */
+    h1 { font-weight: 800; letter-spacing: -0.02em; font-size: clamp(2rem, 4vw + 1rem, 3.4rem); margin: 0 0 8px; }
+    h2 { font-weight: 700; letter-spacing: -0.01em; font-size: clamp(1.4rem, 1.8vw + 1rem, 2.2rem); margin: 0 0 8px; }
+    h3 { font-weight: 700; font-size: clamp(1.1rem, .9vw + .9rem, 1.4rem); margin: 0 0 6px; }
+    p { margin: 0 0 12px; color: var(--muted); }
+
+    /* Accent gradient */
+    .accent { background-image: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .text-accent { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    /* Buttons */
+    .btn { position: relative; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; font-weight: 700; padding: 12px 16px; border-radius: var(--radius-sm); transition: transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease; }
+    .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 50%, transparent); }
+    .btn-accent { color: #0b0f14; background-image: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow-sm); }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--edge); }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    /* Chips & badges */
+    .chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--edge); background: color-mix(in srgb, var(--card) 80%, transparent); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); font-weight:600; font-size:.9rem; }
+    .trust { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+
+    /* Cards */
+    .card { background: var(--card); border: 1px solid var(--edge); border-radius: var(--radius); box-shadow: var(--shadow-sm); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); }
+    .card:hover { box-shadow: var(--shadow-md); }
+
+    /* ===== NAV ===== */
+    header.nav { position: sticky; top: 0; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--edge); z-index: 50; background: color-mix(in srgb, var(--bg) 70%, transparent); }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; padding: 12px 0; }
+    .nav-left { display:flex; align-items:center; gap:16px; }
+    .logo { display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.3px; }
+    .logo svg { width:28px; height:28px; }
+    nav ul { list-style:none; display:none; gap:18px; padding:0; margin:0; }
+    nav a { color: var(--muted); font-weight: 600; }
+    nav a:hover, nav a:focus { color: var(--text); }
+    .nav-actions { display:flex; align-items:center; gap:10px; }
+    .theme-toggle { border:1px solid var(--edge); background: transparent; border-radius: 999px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
+
+    @media (min-width: 900px) { nav ul { display:flex; } }
+
+    /* ===== HERO ===== */
+    .hero { padding: 56px 0 24px; position: relative; overflow: clip; }
+    .hero-grid { display:grid; gap: 22px; align-items: center; }
+    @media (min-width: 980px) { .hero-grid { grid-template-columns: 1.1fr .9fr; gap: 36px; } }
+    .hero-cta { display:flex; gap:10px; flex-wrap:wrap; margin: 12px 0 6px; }
+    .mock { padding: 16px; border-radius: calc(var(--radius) + 4px); box-shadow: var(--shadow-lg); }
+    .mock-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .mock-screen { display:grid; gap:10px; grid-template-columns: 1fr 1fr; }
+    .mock-card { padding:12px; border-radius: 12px; border:1px solid var(--edge); background: color-mix(in srgb, var(--bg) 40%, transparent); }
+    .rings { width: 100%; aspect-ratio: 1/1; }
+
+    /* ===== Problem -> Solution ===== */
+    .band { margin: 24px 0; padding: 18px; border-radius: var(--radius); background: linear-gradient(135deg, color-mix(in srgb, var(--card) 70%, transparent), color-mix(in srgb, var(--card) 40%, transparent)); border:1px solid var(--edge); display:grid; gap:16px; }
+    @media (min-width: 820px) { .band { grid-template-columns: 1fr 1fr; gap: 20px; } }
+    .list { display:grid; gap:10px; }
+    .list li { list-style:none; display:flex; align-items:center; gap:10px; padding:10px; border:1px dashed var(--edge); border-radius: 10px; }
+
+    /* ===== Features Grid ===== */
+    .features { padding: 22px 0; }
+    .grid { display:grid; gap: 14px; }
+    @media (min-width: 720px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1040px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    .feature { padding: 16px; }
+
+    /* ===== How it Works ===== */
+    .steps { display:grid; gap: 14px; grid-template-columns: repeat(1,1fr); }
+    @media (min-width: 820px) { .steps { grid-template-columns: repeat(3,1fr); } }
+    .step { padding:16px; position:relative; }
+    .badge { width:28px; height:28px; border-radius: 50%; display:grid; place-items:center; font-weight:800; color:#0b0f14; }
+
+    /* ===== Demo (NL logging) ===== */
+    .demo { padding: 16px; display:grid; gap: 14px; }
+    .demo form { display:grid; gap: 10px; }
+    .field { display:flex; gap:10px; align-items:center; }
+    .field input[type="text"] { flex:1; padding: 12px 14px; border-radius: 10px; border:1px solid var(--edge); background: color-mix(in srgb, var(--bg) 10%, transparent); color: var(--text); }
+    .preview { display:grid; gap: 8px; grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .preview .kv { padding: 10px; border-radius: 10px; border:1px solid var(--edge); background: color-mix(in srgb, var(--card) 60%, transparent); }
+    .progress { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--bg) 20%, transparent); overflow:hidden; border:1px solid var(--edge); }
+    .progress > span { display:block; height:100%; width:0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .6s ease; }
+
+    /* ===== Screens/Metrics Strip ===== */
+    .strip { display:grid; gap: 12px; grid-template-columns: repeat(1,1fr); }
+    @media (min-width: 700px) { .strip { grid-template-columns: repeat(3,1fr); } }
+    .frame { padding: 12px; }
+
+    /* ===== Pricing ===== */
+    .pricing { display:grid; gap: 14px; grid-template-columns: repeat(1, minmax(0,1fr)); }
+    @media (min-width: 900px) { .pricing { grid-template-columns: repeat(2, 1fr); } }
+    .price-card { padding: 18px; position:relative; }
+    .price { font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem); font-weight: 800; letter-spacing: -0.02em; }
+    .ul { margin: 12px 0; padding-left: 18px; color: var(--muted); }
+
+    /* ===== Testimonials ===== */
+    .testimonials { display:grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 880px) { .testimonials { grid-template-columns: 1fr 1fr; } }
+    .quote { padding: 16px; }
+
+    /* ===== FAQ ===== */
+    .faq button { width:100%; text-align:left; padding: 14px 12px; border-radius: 12px; border:1px solid var(--edge); background: color-mix(in srgb, var(--card) 70%, transparent); font-weight:700; display:flex; align-items:center; justify-content:space-between; }
+    .faq button:focus-visible { outline:none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 50%, transparent); }
+    .faq .answer { display:none; padding: 10px 12px; border-left: 2px solid var(--accent-2); color: var(--muted); }
+
+    /* ===== Email capture ===== */
+    .capture { display:grid; gap: 10px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .capture { grid-template-columns: 1fr auto; } }
+    .capture input[type="email"] { width:100%; padding: 14px; border-radius: 12px; border:1px solid var(--edge); background: color-mix(in srgb, var(--bg) 10%, transparent); color: var(--text); }
+
+    /* ===== Footer ===== */
+    footer { padding: 36px 0; border-top:1px solid var(--edge); margin-top: 24px; }
+    .footer-grid { display:grid; gap: 16px; grid-template-columns: 1fr; }
+    @media (min-width: 820px) { .footer-grid { grid-template-columns: 1fr auto; align-items:start; } }
+
+    /* ===== Interactions & Focus ===== */
+    .lift { transition: transform .2s ease, box-shadow .2s ease; }
+    .lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .inline-icon { width:18px; height:18px; }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ===================== NAV ===================== -->
+  <header class="nav" role="banner">
+    <div class="container nav-inner">
+      <div class="nav-left">
+        <a class="logo" href="#top" aria-label="Fitbot home">
+          <!-- Logo: stylized F dumbbell/heartbeat -->
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <!-- dumbbell bar -->
+            <rect x="10" y="29" width="44" height="6" rx="3" fill="currentColor"/>
+            <!-- plates -->
+            <rect x="4" y="24" width="8" height="16" rx="3" fill="currentColor"/>
+            <rect x="52" y="24" width="8" height="16" rx="3" fill="currentColor"/>
+            <!-- F stroke (heartbeat kink) -->
+            <path d="M14 14h24M14 34h16l4-8 4 8h12" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="64" y2="64">
+                <stop offset="0%" stop-color="var(--accent)"/>
+                <stop offset="100%" stop-color="var(--accent-2)"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Fitbot</span>
+        </a>
+        <nav aria-label="Primary">
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how">How it works</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <!-- sun/moon -->
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 4a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5a1 1 0 0 1 1-1m0 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8m8-5h2a1 1 0 1 1 0 2h-2a1 1 0 1 1 0-2M2 11h2a1 1 0 1 1 0 2H2a1 1 0 1 1 0-2m16.95 6.536l1.414 1.414a1 1 0 0 1-1.414 1.414l-1.414-1.414a1 1 0 1 1 1.414-1.414M4.05 5.05L5.464 6.464A1 1 0 1 1 4.05 7.88L2.636 6.464A1 1 0 0 1 4.05 5.05m0 13.9a1 1 0 0 1 1.414 0L6.88 20.364A1 1 0 0 1 5.464 21.78L4.05 20.364a1 1 0 0 1 0-1.414M18.536 4.05a1 1 0 0 1 1.414 0L21.364 5.464A1 1 0 0 1 19.95 6.88L18.536 5.464a1 1 0 0 1 0-1.414Z"/></svg>
+        </button>
+        <a class="btn btn-ghost" href="#" role="button">Sign in</a>
+        <a class="btn btn-accent" href="#cta" role="button">Get Fitbot</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ===================== HERO ===================== -->
+    <section class="hero container" aria-labelledby="hero-title">
+      <div class="hero-grid">
+        <div>
+          <h1 id="hero-title">Train with precision, every day.</h1>
+          <p>Fitbot plans your sessions, tracks your lifts, and adapts to your recovery—so progress becomes automatic.</p>
+          <div class="hero-cta">
+            <a class="btn btn-accent" href="#cta">Get Fitbot</a>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
+          </div>
+          <div class="trust" aria-label="trust badges">
+            <span class="chip">🔒 Private by default</span>
+            <span class="chip">🚫 No ads</span>
+            <span class="chip">⌚ Syncs with your wearables</span>
+          </div>
+        </div>
+        <div>
+          <div class="card mock lift" aria-label="Device mockup">
+            <div class="mock-head">
+              <strong>Today • Pull Day</strong>
+              <span class="chip"><svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2m1 15h-2v-2h2Zm0-4h-2V7h2Z"/></svg> Ready</span>
+            </div>
+            <div class="mock-screen">
+              <div class="mock-card">
+                <h3>Progress</h3>
+                <svg class="rings" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(128,128,128,.2)" stroke-width="12"/>
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="url(#grad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326" stroke-dashoffset="80"/>
+                  <defs>
+                    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="var(--accent)"/>
+                      <stop offset="100%" stop-color="var(--accent-2)"/>
+                    </linearGradient>
+                  </defs>
+                  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="18" fill="currentColor" font-weight="800">78%</text>
+                </svg>
+              </div>
+              <div class="mock-card">
+                <h3>Volume (week)</h3>
+                <svg viewBox="0 0 220 120" aria-hidden="true">
+                  <rect x="0" y="0" width="100%" height="100%" fill="none"/>
+                  <polyline points="10,100 50,80 90,88 130,60 170,68 210,40" fill="none" stroke="url(#grad)" stroke-width="6" stroke-linecap="round"/>
+                  <g fill="currentColor" opacity=".6" font-size="10">
+                    <text x="10" y="112">Mon</text><text x="50" y="112">Tue</text><text x="90" y="112">Wed</text><text x="130" y="112">Thu</text><text x="170" y="112">Fri</text><text x="200" y="112">Sat</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Problem → Solution ===================== -->
+    <section class="container" aria-labelledby="ps-title">
+      <div class="band">
+        <div>
+          <h2 id="ps-title">The problem</h2>
+          <ul class="list" role="list">
+            <li><svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 3H7a2 2 0 0 0-2 2v2h2V5h10v2h2V5a2 2 0 0 0-2-2m2 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2M5 19v-8h14v8Z"/></svg> Inconsistent training</li>
+            <li><svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 3h18v2H3V3m0 14h18v2H3v-2m0-7h18v2H3v-2Z"/></svg> Confusing plans</li>
+            <li><svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2m1 15H7v-2h6Zm4-4H7v-2h10Zm0-4H7V7h10Z"/></svg> Noisy tracking</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Fitbot’s solution</h2>
+          <ul class="list" role="list">
+            <li><svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l3 7h7l-5.5 4.1L18 20l-6-4-6 4 1.5-6.9L2 9h7Z"/></svg> Adaptive plans that auto-tune volume & intensity</li>
+            <li><svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3c-4.97 0-9 3.58-9 8 0 2.38 1.26 4.52 3.28 6.03L6 22l3.22-1.66c.89.19 1.84.29 2.78.29 4.97 0 9-3.58 9-8s-4.03-9-9-9Z"/></svg> Natural-language logging you’ll actually use</li>
+            <li><svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 7V3H7v4H2v14h20V7Zm-8 0V5h6v2Zm11 12H4V9h16Z"/></svg> Clear insights, private by design</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Features Grid ===================== -->
+    <section id="features" class="features container" aria-labelledby="feat-title">
+      <h2 id="feat-title">Everything you need to train smarter</h2>
+      <div class="grid">
+        <!-- Feature cards -->
+        <article class="card feature lift" aria-labelledby="f1"><h3 id="f1">AI coach & adaptive plans</h3><p>Auto-progresses volume and intensity based on your performance.</p></article>
+        <article class="card feature lift" aria-labelledby="f2"><h3 id="f2">Natural-language logging</h3><p>Type “3×10 squats @ 40kg” and it’s parsed instantly.</p></article>
+        <article class="card feature lift" aria-labelledby="f3"><h3 id="f3">Wearable sync</h3><p>Import from Apple Health & Google Fit to calibrate recovery.</p></article>
+        <article class="card feature lift" aria-labelledby="f4"><h3 id="f4">Form & tempo cues</h3><p>Built-in timers, tempo, rest, and RPE tracking.</p></article>
+        <article class="card feature lift" aria-labelledby="f5"><h3 id="f5">Recovery & readiness</h3><p>Sleep-aware guidance that suggests rest days when needed.</p></article>
+        <article class="card feature lift" aria-labelledby="f6"><h3 id="f6">Privacy by design</h3><p>Your data stays yours. No ads, no selling.</p></article>
+      </div>
+    </section>
+
+    <!-- ===================== How it works ===================== -->
+    <section id="how" class="container" aria-labelledby="how-title">
+      <h2 id="how-title">How it works</h2>
+      <div class="steps">
+        <div class="card step lift"><span class="badge accent">1</span><h3>Assess</h3><p>Quick setup + baseline test to map your current capacity.</p></div>
+        <div class="card step lift"><span class="badge accent">2</span><h3>Train</h3><p>Daily sessions with auto-tuned sets, reps, and load for steady progress.</p></div>
+        <div class="card step lift"><span class="badge accent">3</span><h3>Improve</h3><p>See clear trends, PRs, and readiness so you keep momentum.</p></div>
+      </div>
+    </section>
+
+    <!-- ===================== Interactive Demo (NL logging) ===================== -->
+    <section class="container" aria-labelledby="demo-title">
+      <div class="card demo" id="demo">
+        <h2 id="demo-title">Try the logger</h2>
+        <p>Type a workout line. Example: <em>3x10 squats @ 40kg, RPE 7, 90s rest</em></p>
+        <form id="demoForm" autocomplete="off" novalidate>
+          <div class="field">
+            <input type="text" id="workoutInput" aria-label="Workout line input" placeholder="e.g., 5x5 bench @ 80kg, RPE 8, 120s rest" />
+            <button class="btn btn-accent" type="submit" aria-label="Parse line">Parse</button>
+          </div>
+        </form>
+        <div class="preview" aria-live="polite" aria-atomic="true">
+          <div class="kv"><strong>Exercise</strong><div id="ex"></div></div>
+          <div class="kv"><strong>Sets × Reps</strong><div id="sr"></div></div>
+          <div class="kv"><strong>Load</strong><div id="ld"></div></div>
+          <div class="kv"><strong>RPE</strong><div id="rp"></div></div>
+          <div class="kv"><strong>Rest</strong><div id="rt"></div></div>
+          <div class="kv"><strong>Notes</strong><div id="nt"></div></div>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+      </div>
+    </section>
+
+    <!-- ===================== Screens / Metrics Strip ===================== -->
+    <section class="container" aria-labelledby="screens-title">
+      <h2 id="screens-title">Clarity you can feel</h2>
+      <div class="strip">
+        <div class="card frame lift"><h3>Weekly Volume</h3>
+          <svg viewBox="0 0 320 160" aria-hidden="true">
+            <rect x="0" y="0" width="100%" height="100%" fill="none"/>
+            <g fill="none" stroke="currentColor" opacity=".15">
+              <path d="M0 130H320"/><path d="M0 100H320"/><path d="M0 70H320"/><path d="M0 40H320"/>
+            </g>
+            <rect x="30" y="90" width="24" height="40" rx="6" class="accent"/>
+            <rect x="90" y="80" width="24" height="50" rx="6" class="accent"/>
+            <rect x="150" y="70" width="24" height="60" rx="6" class="accent"/>
+            <rect x="210" y="60" width="24" height="70" rx="6" class="accent"/>
+            <rect x="270" y="45" width="24" height="85" rx="6" class="accent"/>
+          </svg>
+          <p>Track sets × reps × load by muscle group.</p>
+        </div>
+        <div class="card frame lift"><h3>PR Badges</h3>
+          <svg viewBox="0 0 320 160" aria-hidden="true">
+            <circle cx="80" cy="80" r="42" fill="none" stroke="url(#gpr)" stroke-width="10"/>
+            <circle cx="240" cy="80" r="42" fill="none" stroke="url(#gpr)" stroke-width="10" stroke-dasharray="264" stroke-dashoffset="80"/>
+            <defs><linearGradient id="gpr" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent-2)"/></linearGradient></defs>
+          </svg>
+          <p>Hit new bests and celebrate streaks.</p>
+        </div>
+        <div class="card frame lift"><h3>Readiness Score</h3>
+          <svg viewBox="0 0 320 160" aria-hidden="true">
+            <path d="M20 130 Q 160 10 300 130" fill="none" stroke="url(#grd)" stroke-width="10" stroke-linecap="round"/>
+            <circle cx="220" cy="70" r="8" fill="currentColor"/>
+            <defs><linearGradient id="grd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent-2)"/></linearGradient></defs>
+          </svg>
+          <p>Sleep + HR trends guide intensity.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Pricing ===================== -->
+    <section id="pricing" class="container" aria-labelledby="pricing-title">
+      <h2 id="pricing-title">Simple, fair pricing</h2>
+      <div class="pricing">
+        <div class="card price-card lift" aria-labelledby="p-free">
+          <h3 id="p-free">Free</h3>
+          <div class="price">$0</div>
+          <ul class="ul">
+            <li>NL logging</li>
+            <li>Basic plans</li>
+            <li>Weekly insights</li>
+          </ul>
+          <a class="btn btn-ghost" href="#cta">Start Free</a>
+        </div>
+        <div class="card price-card lift" aria-labelledby="p-pro">
+          <h3 id="p-pro">Pro</h3>
+          <div class="price">$12.99<span style="font-size:.6em">/mo</span></div>
+          <ul class="ul">
+            <li>AI adaptive coaching</li>
+            <li>Wearable sync</li>
+            <li>Recovery & readiness</li>
+            <li>Priority support</li>
+            <li>Privacy by design</li>
+          </ul>
+          <a class="btn btn-accent" href="#cta">Get Pro</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Testimonials ===================== -->
+    <section class="container" aria-labelledby="test-title">
+      <h2 id="test-title">What athletes say</h2>
+      <div class="testimonials">
+        <figure class="card quote lift"><blockquote>“Fitbot keeps me consistent without thinking. Logging is stupid-fast.”</blockquote><figcaption>— Alex P., Software Engineer</figcaption></figure>
+        <figure class="card quote lift"><blockquote>“The adaptive plans and recovery tips helped me hit 3 PRs this month.”</blockquote><figcaption>— Dana R., Amateur Boxer</figcaption></figure>
+        <figure class="card quote lift"><blockquote>“Clean, private, no fluff. Exactly what I want from a fitness app.”</blockquote><figcaption>— Mo K., Trainer</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section id="faq" class="container" aria-labelledby="faq-title">
+      <h2 id="faq-title">FAQ</h2>
+      <div class="faq">
+        <div class="card" style="padding:10px;">
+          <button aria-expanded="false" aria-controls="a1" class="lift">Is my data private?</button>
+          <div id="a1" class="answer">Yes. Fitbot is built privacy-first. Your logs are yours. No ads, no selling data.</div>
+        </div>
+        <div class="card" style="padding:10px; margin-top:8px;">
+          <button aria-expanded="false" aria-controls="a2" class="lift">Does it work without a wearable?</button>
+          <div id="a2" class="answer">Absolutely. Wearables enhance recovery insights, but the AI coach works with manual logs too.</div>
+        </div>
+        <div class="card" style="padding:10px; margin-top:8px;">
+          <button aria-expanded="false" aria-controls="a3" class="lift">Can I export my data?</button>
+          <div id="a3" class="answer">Yes. You can export workouts and summaries anytime.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Email Capture ===================== -->
+    <section id="cta" class="container" aria-labelledby="cta-title" style="margin-top:18px;">
+      <div class="card" style="padding:18px;">
+        <h2 id="cta-title">Get early access</h2>
+        <form id="emailForm" class="capture" novalidate>
+          <label for="email" class="visually-hidden" style="position:absolute;left:-9999px;">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@domain.com" aria-describedby="emailHelp" required />
+          <button class="btn btn-accent" type="submit">Join the list</button>
+          <small id="emailHelp" style="color:var(--muted)">No spam. Unsubscribe anytime.</small>
+        </form>
+        <p id="emailMsg" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer role="contentinfo">
+    <div class="container footer-grid">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="26" height="26"><rect x="10" y="29" width="44" height="6" rx="3" fill="currentColor"/><rect x="4" y="24" width="8" height="16" rx="3" fill="currentColor"/><rect x="52" y="24" width="8" height="16" rx="3" fill="currentColor"/><path d="M14 14h24M14 34h16l4-8 4 8h12" stroke="url(#g2)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><defs><linearGradient id="g2" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent-2)"/></linearGradient></defs></svg>
+        </div>
+        <div>
+          <strong>Fitbot</strong><br/>
+          <small style="color:var(--muted)">Stronger, smarter, consistently.</small>
+        </div>
+      </div>
+      <div style="display:grid; gap:8px; justify-items:end;">
+        <nav aria-label="Footer">
+          <a href="#features">Features</a> · <a href="#how">How it works</a> · <a href="#pricing">Pricing</a> · <a href="#faq">FAQ</a>
+        </nav>
+        <div>
+          <a href="#" aria-label="Twitter" title="Twitter">#</a> ·
+          <a href="#" aria-label="Instagram" title="Instagram">#</a> ·
+          <a href="#" aria-label="YouTube" title="YouTube">#</a>
+        </div>
+        <small style="color:var(--muted)">© <span id="year"></span> Fitbot. All rights reserved.</small>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script defer>
+  // Utility: qs
+  const $ = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+
+  // ===== Theme Toggle (respects system, with user override) =====
+  const root = document.documentElement;
+  const themeToggle = document.getElementById('themeToggle');
+  const savedTheme = localStorage.getItem('fitbot-theme');
+  if (savedTheme === 'light' || savedTheme === 'dark') {
+    root.setAttribute('data-theme', savedTheme);
+  }
+  themeToggle?.addEventListener('click', () => {
+    const now = root.getAttribute('data-theme');
+    const next = now === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('fitbot-theme', next);
+  });
+
+  // ===== FAQ Accordion (ARIA) =====
+  $$('#faq button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      const panel = btn.parentElement?.querySelector('.answer');
+      if (panel) panel.style.display = expanded ? 'none' : 'block';
+    });
+  });
+
+  // ===== Email capture validation =====
+  const emailForm = document.getElementById('emailForm');
+  const emailMsg = document.getElementById('emailMsg');
+  emailForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = /** @type {HTMLInputElement} */(document.getElementById('email'))?.value.trim();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!ok) {
+      emailMsg.textContent = 'Please enter a valid email.';
+      emailMsg.style.color = 'crimson';
+      return;
+    }
+    emailMsg.textContent = 'Thanks! We\'ll be in touch.';
+    emailMsg.style.color = 'var(--muted)';
+    emailForm.reset();
+  });
+
+  // ===== Interactive NL Logging Demo =====
+  const form = document.getElementById('demoForm');
+  const input = document.getElementById('workoutInput');
+  const fields = { ex: $('#ex'), sr: $('#sr'), ld: $('#ld'), rp: $('#rp'), rt: $('#rt'), nt: $('#nt') };
+  const bar = document.getElementById('bar');
+
+  function parseWorkout(line='') {
+    const cleaned = line.toLowerCase().replace(/×/g, 'x');
+    // Regexes
+    const srMatch = cleaned.match(/(\d+)\s*[xX]\s*(\d+)/); // sets x reps
+    const loadMatch = cleaned.match(/@\s*(\d+(?:\.\d+)?)\s*(kg|lb|lbs)?/);
+    const rpeMatch = cleaned.match(/rpe\s*(\d+(?:\.\d+)?)/);
+    const restMatch = cleaned.match(/(\d+)\s*(s|sec|seconds|m|min|minutes)\s*rest|rest\s*(\d+)\s*(s|sec|seconds|m|min|minutes)/);
+    // Exercise guess: remove known tokens and take first word(s)
+    let exercise = cleaned.replace(/\b(\d+x\d+|rpe\s*\d+(?:\.\d+)?|@\s*\d+(?:\.\d+)?\s*(?:kg|lb|lbs)?|\d+\s*(?:s|sec|seconds|m|min|minutes)\s*rest|rest)\b/g, '').replace(/[,;]+/g,' ').trim();
+    if (!exercise || /^(,|and|then|after)$/.test(exercise)) exercise = '';
+
+    return {
+      exercise: exercise || '—',
+      sets: srMatch ? Number(srMatch[1]) : undefined,
+      reps: srMatch ? Number(srMatch[2]) : undefined,
+      load: loadMatch ? `${loadMatch[1]} ${loadMatch[2]||''}`.trim() : undefined,
+      rpe: rpeMatch ? Number(rpeMatch[1]) : undefined,
+      rest: restMatch ? (restMatch[1] ? `${restMatch[1]} ${restMatch[2]}` : `${restMatch[3]} ${restMatch[4]}`) : undefined,
+      notes: /tempo|@\d+/.test(cleaned) ? 'Includes tempo/load info' : ''
+    };
+  }
+
+  function renderPreview(data) {
+    fields.ex.textContent = data.exercise;
+    fields.sr.textContent = data.sets && data.reps ? `${data.sets} × ${data.reps}` : '—';
+    fields.ld.textContent = data.load || '—';
+    fields.rp.textContent = data.rpe ?? '—';
+    fields.rt.textContent = data.rest || '—';
+    fields.nt.textContent = data.notes || '—';
+    // Progress bar animation
+    const pct = [data.exercise!=='—', !!data.sets, !!data.reps, !!data.load, data.rpe!==undefined, !!data.rest].filter(Boolean).length / 6 * 100;
+    bar.style.width = pct.toFixed(0) + '%';
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = parseWorkout(input?.value || '');
+    renderPreview(data);
+  });
+
+  // Live parse on input
+  input?.addEventListener('input', () => {
+    const data = parseWorkout(input.value);
+    renderPreview(data);
+  });
+
+  // Year in footer
+  document.getElementById('year').textContent = String(new Date().getFullYear());
+  </script>
+</body>
+</html>
