@@ -96,6 +96,12 @@
       --accent-2: #3b82f6;
     }
 
+    /* ===== Palette Variants (accent schemes) ===== */
+    [data-palette="mint"] { --accent:#22c55e; --accent-2:#3b82f6; }
+    [data-palette="sunrise"] { --accent:#f59e0b; --accent-2:#ef4444; }
+    [data-palette="violet"] { --accent:#a78bfa; --accent-2:#60a5fa; }
+    [data-palette="rose"] { --accent:#fb7185; --accent-2:#f472b6; }
+
     /* ===== Base ===== */
     html { scroll-behavior: smooth; }
     body {
@@ -144,7 +150,10 @@
     nav a { color: var(--muted); font-weight: 600; }
     nav a:hover, nav a:focus { color: var(--text); }
     .nav-actions { display:flex; align-items:center; gap:10px; }
-    .theme-toggle { border:1px solid var(--edge); background: transparent; border-radius: 999px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
+    $1
+
+    /* Palette selects */
+    .palette-select { border:1px solid var(--edge); background: transparent; color: var(--text); border-radius: 999px; height:40px; padding: 0 10px; appearance:none; -webkit-appearance:none; font-weight:600; }
 
     @media (min-width: 900px) { nav ul { display:flex; } }
 
@@ -264,7 +273,18 @@
           </ul>
         </nav>
       </div>
-      <div class="nav-actions">
+      $1
+        <select id="paletteSelect" aria-label="Accent palette" class="palette-select">
+          <option value="mint">Mint</option>
+          <option value="sunrise">Sunrise</option>
+          <option value="violet">Violet</option>
+          <option value="rose">Rose</option>
+        </select>
+        <select id="scheduleSelect" aria-label="Color schedule" class="palette-select">
+          <option value="manual">Manual</option>
+          <option value="system">Auto: system</option>
+          <option value="time">Auto: time of day</option>
+        </select>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
           <!-- sun/moon -->
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 4a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5a1 1 0 0 1 1-1m0 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8m8-5h2a1 1 0 1 1 0 2h-2a1 1 0 1 1 0-2M2 11h2a1 1 0 1 1 0 2H2a1 1 0 1 1 0-2m16.95 6.536l1.414 1.414a1 1 0 0 1-1.414 1.414l-1.414-1.414a1 1 0 1 1 1.414-1.414M4.05 5.05L5.464 6.464A1 1 0 1 1 4.05 7.88L2.636 6.464A1 1 0 0 1 4.05 5.05m0 13.9a1 1 0 0 1 1.414 0L6.88 20.364A1 1 0 0 1 5.464 21.78L4.05 20.364a1 1 0 0 1 0-1.414M18.536 4.05a1 1 0 0 1 1.414 0L21.364 5.464A1 1 0 0 1 19.95 6.88L18.536 5.464a1 1 0 0 1 0-1.414Z"/></svg>
@@ -553,6 +573,58 @@
     root.setAttribute('data-theme', next);
     localStorage.setItem('fitbot-theme', next);
   });
+
+  // ===== Color Palette & Schedule =====
+  const paletteSelect = document.getElementById('paletteSelect');
+  const scheduleSelect = document.getElementById('scheduleSelect');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function applyPalette(p){ document.documentElement.setAttribute('data-palette', p); }
+
+  function runTimeUpdate(){
+    const h = new Date().getHours();
+    let p = 'mint';
+    if (h < 6) p = 'rose';
+    else if (h < 12) p = 'sunrise';
+    else if (h < 18) p = 'mint';
+    else p = 'violet';
+    applyPalette(p);
+  }
+
+  let timer = null;
+  function tickTimer(enable){ if (timer) { clearInterval(timer); timer = null; } if (enable) { timer = setInterval(runTimeUpdate, 60*60*1000); } }
+
+  function applySchedule(s){
+    localStorage.setItem('fitbot-schedule', s);
+    if (s === 'manual') {
+      const p = localStorage.getItem('fitbot-palette') || 'mint';
+      applyPalette(p); tickTimer(false);
+    } else if (s === 'system') {
+      const p = prefersDark.matches ? 'violet' : 'mint';
+      applyPalette(p); tickTimer(false);
+    } else if (s === 'time') {
+      runTimeUpdate(); tickTimer(true);
+    }
+  }
+
+  const savedPalette = localStorage.getItem('fitbot-palette') || 'mint';
+  const savedSchedule = localStorage.getItem('fitbot-schedule') || 'manual';
+  if (paletteSelect) paletteSelect.value = savedPalette;
+  if (scheduleSelect) scheduleSelect.value = savedSchedule;
+  applySchedule(savedSchedule);
+
+  paletteSelect?.addEventListener('change', (e)=>{
+    const val = e.target.value; localStorage.setItem('fitbot-palette', val);
+    if ((localStorage.getItem('fitbot-schedule')||'manual') === 'manual') applyPalette(val);
+  });
+  scheduleSelect?.addEventListener('change', (e)=> applySchedule(e.target.value));
+  prefersDark.addEventListener('change', ()=>{ if ((localStorage.getItem('fitbot-schedule')||'manual')==='system') applySchedule('system'); });
+
+  // Keep browser UI theme-color in sync for Chrome/Android and others
+  const themeMeta = document.querySelector('meta[name="theme-color"]') || (function(){ const m=document.createElement('meta'); m.setAttribute('name','theme-color'); document.head.appendChild(m); return m; })();
+  function syncThemeColor(){ const cs = getComputedStyle(document.documentElement); themeMeta.setAttribute('content', cs.getPropertyValue('--bg').trim()); }
+  new MutationObserver(syncThemeColor).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme','data-palette'] });
+  syncThemeColor();
 
   // ===== FAQ Accordion (ARIA) =====
   $$('#faq button').forEach(btn => {
