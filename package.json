@@ -1,0 +1,10 @@
+{
+  "name": "fitbot-v2",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}

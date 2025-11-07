@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitbot - AI Fitness Assistant</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; transition: all 0.3s ease; }
+        body.dark { background: #1a1a1a; color: #e0e0e0; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; position: relative; }
+        .header h1 { color: #333; margin-bottom: 10px; }
+        body.dark .header h1 { color: #e0e0e0; }
+        
+        .theme-toggle { position: absolute; top: 0; right: 0; background: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer; font-size: 14px; }
+        .theme-toggle:hover { background: #0056b3; }
+        body.dark .theme-toggle { background: #ffc107; color: #000; }
+        body.dark .theme-toggle:hover { background: #e0a800; }
+        
+        /* Login/Register Screen */
+        .auth-screen { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        body.dark .auth-screen { background: #2d2d2d; }
+        .auth-tabs { display: flex; margin-bottom: 20px; }
+        .auth-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-bottom: 2px solid #ddd; }
+        body.dark .auth-tab { border-bottom-color: #555; color: #e0e0e0; }
+        .auth-tab.active { border-bottom-color: #007bff; color: #007bff; }
+        
+        /* Main App */
+        .main-app { display: none; }
+        .user-info { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        body.dark .user-info { background: #2d2d2d; }
+        
+        .tabs { display: flex; background: white; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
+        body.dark .tabs { background: #2d2d2d; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; border-right: 1px solid #ddd; }
+        body.dark .tab { border-right-color: #555; color: #e0e0e0; }
+        .tab:last-child { border-right: none; }
+        .tab.active { background: #007bff; color: white; }
+        
+        .tab-content { display: none; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        body.dark .tab-content { background: #2d2d2d; }
+        .tab-content.active { display: block; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        body.dark input { background: #3d3d3d; border-color: #555; color: #e0e0e0; }
+        button { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .result { margin-top: 20px; padding: 15px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .recommendations { white-space: pre-line; line-height: 1.6; }
+        
+        .logout-btn { background: #dc3545; padding: 8px 16px; font-size: 14px; }
+        .logout-btn:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+            <h1>🏋️ Fitbot v2</h1>
+            <p>Your AI-Powered Fitness Assistant</p>
+        </div>
+
+        <!-- Auth Screen -->
+        <div id="authScreen" class="auth-screen">
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
+                <div class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <h3>Welcome Back!</h3>
+                <p style="margin-bottom: 20px; color: #666;">Enter your email to continue</p>
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <button onclick="login()">Login</button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" style="display: none;">
+                <h3>Create Your Profile</h3>
+                <p style="margin-bottom: 20px; color: #666;">Tell us about yourself to get started</p>
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="regName">Name:</label>
+                    <input type="text" id="regName" required>
+                </div>
+                <div class="form-group">
+                    <label for="regSurname">Surname:</label>
+                    <input type="text" id="regSurname" required>
+                </div>
+                <div class="form-group">
+                    <label for="regAge">Age:</label>
+                    <input type="number" id="regAge">
+                </div>
+                <div class="form-group">
+                    <label for="regWeight">Weight (kg):</label>
+                    <input type="number" id="regWeight" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="regHeight">Height (cm):</label>
+                    <input type="number" id="regHeight" step="0.1">
+                </div>
+                <button onclick="register()">Create Profile</button>
+            </div>
+
+            <div id="authResult"></div>
+        </div>
+
+        <!-- Main App -->
+        <div id="mainApp" class="main-app">
+            <div class="user-info">
+                <div>
+                    <strong id="userName">Welcome!</strong>
+                    <span id="userDetails"></span>
+                    <div id="fitnessMetrics" style="margin-top: 8px; font-size: 14px; display: flex; gap: 15px;"></div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('questionnaire')">Questionnaire</div>
+                <div class="tab" onclick="switchTab('ai')">AI Fitness Advisor</div>
+            </div>
+
+            <!-- Questionnaire Tab -->
+            <div id="questionnaireTab" class="tab-content active">
+                <h3>Fitness Assessment</h3>
+                <div id="questionnaireContainer">
+                    <div class="result info">Loading questionnaire...</div>
+                </div>
+                <div id="questionnaireResult"></div>
+                <button onclick="debugScoring()" style="background: #6c757d; margin-top: 10px;">Debug Scoring</button>
+                <div id="debugResult"></div>
+            </div>
+
+            <!-- AI Fitness Advisor Tab -->
+            <div id="aiTab" class="tab-content">
+                <h3>AI Fitness Advisor</h3>
+                <p>Get personalized fitness recommendations based on your profile and questionnaire responses.</p>
+                <button onclick="getAIRecommendations()">Get AI Recommendations</button>
+                <div id="aiResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = '__SUPABASE_URL__';
+        const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUser = null;
+        let currentRun = null;
+        let questionnaireData = null;
+
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const button = document.querySelector('.theme-toggle');
+            
+            if (body.classList.contains('dark')) {
+                body.classList.remove('dark');
+                button.textContent = '🌙 Dark';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark');
+                button.textContent = '☀️ Light';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Auth functions
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
+            
+            if (tab === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            if (!email) {
+                showAuthResult('Please enter your email', 'error');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('Users')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+
+                if (error) throw error;
+
+                currentUser = data;
+                showMainApp();
+            } catch (error) {
+                showAuthResult('Email not found. Please register first.', 'error');
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('regEmail').value.trim();
+            const name = document.getElementById('regName').value;
+            const surname = document.getElementById('regSurname').value;
+            const age = document.getElementById('regAge').value;
+            const weight = document.getElementById('regWeight').value;
+            const height = document.getElementById('regHeight').value;
+
+            if (!email || !name || !surname) {
+                showAuthResult('Email, name and surname are required', 'error');
+                return;
+            }
+
+            try {
+                const userData = { email, name, surname };
+                if (age) userData.age = parseInt(age);
+                if (weight) userData.weight = parseFloat(weight);
+                if (height) userData.height = parseFloat(height);
+
+                const { data, error } = await supabase
+                    .from('Users')
+                    .insert([userData])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                currentUser = data;
+                showAuthResult(`Profile created! Welcome ${name}!`, 'success');
+                setTimeout(() => showMainApp(), 2000);
+            } catch (error) {
+                showAuthResult('Error creating profile: ' + error.message, 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('authScreen').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('authResult').innerHTML = '';
+        }
+
+        async function showMainApp() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            document.getElementById('userName').textContent = `${currentUser.name} ${currentUser.surname}`;
+            document.getElementById('userDetails').textContent = `Welcome back!`;
+            
+            await loadUserFitnessMetrics();
+            loadQuestionnaire();
+        }
+
+        async function loadUserFitnessMetrics() {
+            try {
+                const { data: user, error } = await supabase
+                    .from('Users')
+                    .select('fitness_level, risk_factor')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                const metricsDiv = document.getElementById('fitnessMetrics');
+                let metricsHtml = '';
+                
+                if (user.fitness_level) {
+                    const levelNames = { 1: 'Beginner', 2: 'Beginner+', 3: 'Intermediate', 4: 'Intermediate+', 5: 'Advanced' };
+                    const levelColors = { 1: '#dc3545', 2: '#fd7e14', 3: '#ffc107', 4: '#28a745', 5: '#007bff' };
+                    metricsHtml += `<span style="color: ${levelColors[user.fitness_level]};">🏋️ ${levelNames[user.fitness_level]} (${user.fitness_level})</span>`;
+                }
+                
+                if (user.risk_factor) {
+                    const riskColors = { low: '#28a745', moderate: '#ffc107', high: '#dc3545' };
+                    const riskIcons = { low: '✅', moderate: '⚠️', high: '🚨' };
+                    metricsHtml += `<span style="color: ${riskColors[user.risk_factor]};">${riskIcons[user.risk_factor]} ${user.risk_factor.charAt(0).toUpperCase() + user.risk_factor.slice(1)} Risk</span>`;
+                }
+
+                if (!metricsHtml) {
+                    metricsHtml = '<span style="color: #6c757d;">Complete questionnaire to see your fitness metrics</span>';
+                }
+
+                metricsDiv.innerHTML = metricsHtml;
+
+            } catch (error) {
+                console.error('Error loading fitness metrics:', error);
+            }
+        }
+
+        function showAuthResult(message, type) {
+            document.getElementById('authResult').innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        // Tab functions
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        // Questionnaire functions
+        async function loadQuestionnaire() {
+            try {
+                const statusResponse = await fetch(`${SUPABASE_URL}/functions/v1/questionnaire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        action: 'getStatus',
+                        userId: currentUser.id
+                    })
+                });
+
+                const statusData = await statusResponse.json();
+                if (!statusResponse.ok) throw new Error(statusData.error);
+
+                if (statusData.status === 'completed') {
+                    renderQuestionnaireStatus('completed', statusData.run);
+                } else if (statusData.status === 'in_progress') {
+                    renderQuestionnaireStatus('in_progress', statusData.run);
+                } else {
+                    renderQuestionnaireStatus('not_started');
+                }
+
+            } catch (error) {
+                console.error('Questionnaire error:', error);
+                document.getElementById('questionnaireContainer').innerHTML = 
+                    `<div class="result error">Error loading questionnaire: ${error.message}</div>`;
+            }
+        }
+
+        function renderQuestionnaireStatus(status, run = null) {
+            const container = document.getElementById('questionnaireContainer');
+            
+            if (status === 'completed') {
+                container.innerHTML = `
+                    <div class="result success">
+                        <h4>✅ Assessment Completed</h4>
+                        <p>You completed your fitness assessment on ${new Date(run.submitted_at).toLocaleDateString()}</p>
+                        <button onclick="editQuestionnaire()" style="margin-top: 10px;">Retake Assessment</button>
+                    </div>
+                `;
+            } else if (status === 'in_progress') {
+                container.innerHTML = `
+                    <div class="result info">
+                        <h4>📝 Assessment In Progress</h4>
+                        <p>You have a saved assessment from ${new Date(run.started_at).toLocaleDateString()}</p>
+                        <button onclick="continueQuestionnaire()" style="margin-right: 10px;">Continue</button>
+                        <button onclick="startNewQuestionnaire()" style="background: #6c757d;">Start Over</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="result info">
+                        <h4>👋 Complete Your Fitness Assessment</h4>
+                        <p>Take our comprehensive assessment to get your fitness level and personalized recommendations.</p>
+                        <button onclick="startNewQuestionnaire()">Start Assessment</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function startNewQuestionnaire() {
+            await loadAndRenderQuestionnaire();
+        }
+
+        async function continueQuestionnaire() {
+            await loadAndRenderQuestionnaire(true);
+        }
+
+        async function editQuestionnaire() {
+            await loadAndRenderQuestionnaire(true);
+        }
+
+        async function loadAndRenderQuestionnaire(loadExisting = false) {
+            try {
+                // Get form structure
+                const formResponse = await fetch(`${SUPABASE_URL}/functions/v1/questionnaire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        action: 'getForm'
+                    })
+                });
+
+                const formData = await formResponse.json();
+                if (!formResponse.ok) throw new Error(formData.error);
+                questionnaireData = formData.form;
+
+                // Start or get existing run
+                const runResponse = await fetch(`${SUPABASE_URL}/functions/v1/questionnaire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        action: loadExisting ? 'getExistingRun' : 'startRun',
+                        userId: currentUser.id
+                    })
+                });
+
+                const runData = await runResponse.json();
+                if (!runResponse.ok) throw new Error(runData.error);
+                currentRun = runData.run;
+
+                // Load existing answers if continuing
+                let existingAnswers = {};
+                if (loadExisting && runData.answers) {
+                    runData.answers.forEach(answer => {
+                        const question = findQuestionById(answer.question_id);
+                        if (question) {
+                            existingAnswers[question.key] = answer.selected_values || answer.text_value;
+                        }
+                    });
+                }
+
+                renderFullQuestionnaire(existingAnswers);
+
+            } catch (error) {
+                console.error('Error loading questionnaire:', error);
+                document.getElementById('questionnaireContainer').innerHTML = 
+                    `<div class="result error">Error: ${error.message}</div>`;
+            }
+        }
+
+        function findQuestionById(questionId) {
+            for (const section of questionnaireData.sections) {
+                for (const question of section.questions) {
+                    if (question.id === questionId) return question;
+                }
+            }
+            return null;
+        }
+
+        function renderFullQuestionnaire(existingAnswers = {}) {
+            const container = document.getElementById('questionnaireContainer');
+            let html = '<form id="questionnaireForm">';
+
+            questionnaireData.sections.forEach(section => {
+                html += `<div class="form-group">
+                    <h4 style="color: #007bff; margin: 20px 0 15px 0; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                        ${section.title}
+                    </h4>`;
+                
+                section.questions.forEach(question => {
+                    html += renderQuestion(question, existingAnswers[question.key]);
+                });
+                
+                html += '</div>';
+            });
+
+            html += `
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button type="button" onclick="saveQuestionnaire('draft')" style="background: #6c757d;">Save Draft</button>
+                    <button type="button" onclick="saveQuestionnaire('submit')" style="padding: 15px 30px; font-size: 16px;">Complete Assessment</button>
+                </div>
+            `;
+            html += '</form>';
+
+            container.innerHTML = html;
+        }
+
+        function renderQuestion(question, existingValue = null) {
+            let html = `<div class="form-group" style="margin-bottom: 20px;">
+                <label style="font-weight: bold; margin-bottom: 8px; display: block;">
+                    ${question.prompt}${question.required ? ' *' : ''}
+                </label>`;
+
+            const options = question.options || [];
+
+            switch (question.type) {
+                case 'single':
+                    html += '<div style="display: flex; flex-direction: column; gap: 8px;">';
+                    options.forEach(option => {
+                        const checked = existingValue === option ? 'checked' : '';
+                        html += `
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer;">
+                                <input type="radio" name="q_${question.key}" value="${option}" ${checked} style="width: auto; margin-right: 8px;"> ${option}
+                            </label>`;
+                    });
+                    html += '</div>';
+                    break;
+
+                case 'multi':
+                    html += '<div style="display: flex; flex-direction: column; gap: 8px;">';
+                    options.forEach(option => {
+                        const checked = (Array.isArray(existingValue) && existingValue.includes(option)) ? 'checked' : '';
+                        html += `
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="q_${question.key}" value="${option}" ${checked} style="width: auto; margin-right: 8px;"> ${option}
+                            </label>`;
+                    });
+                    html += '</div>';
+                    break;
+
+                case 'text':
+                    const value = existingValue || '';
+                    html += `<input type="text" name="q_${question.key}" value="${value}" placeholder="Enter your answer" style="width: 100%; padding: 8px;">`;
+                    break;
+                case 'date':
+                    const dateValue = existingValue || '';
+                    html += `<input type="date" name="q_${question.key}" value="${dateValue}" style="width: 100%; padding: 8px;">`;
+                    break;            }
+
+            html += '</div>';
+            return html;
+        }
+
+        async function saveQuestionnaire(type = 'submit') {
+            const form = document.getElementById('questionnaireForm');
+            const formData = new FormData(form);
+            const answers = [];
+
+            questionnaireData.sections.forEach(section => {
+                section.questions.forEach(question => {
+                    const questionKey = `q_${question.key}`;
+                    
+                    if (question.type === 'multi') {
+                        const selectedValues = [];
+                        const checkboxes = form.querySelectorAll(`input[name="${questionKey}"]:checked`);
+                        checkboxes.forEach(cb => selectedValues.push(cb.value));
+                        
+                        if (selectedValues.length > 0) {
+                            answers.push({
+                                run_id: currentRun.id,
+                                question_id: question.id,
+                                selected_values: selectedValues
+                            });
+                        }
+                    } else {
+                        const value = formData.get(questionKey);
+                        if (value) {
+                            answers.push({
+                                run_id: currentRun.id,
+                                question_id: question.id,
+                                text_value: value
+                            });
+                        }
+                    }
+                });
+            });
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/questionnaire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        action: 'saveAnswers',
+                        runId: currentRun.id,
+                        answers: answers,
+                        status: type === 'submit' ? 'submitted' : 'in_progress'
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
+
+                if (type === 'submit') {
+                    document.getElementById('questionnaireResult').innerHTML = 
+                        '<div class="result success">Assessment completed! Your fitness metrics have been calculated.</div>';
+                    setTimeout(async () => {
+                        await loadUserFitnessMetrics();
+                        loadQuestionnaire();
+                    }, 2000);
+                } else {
+                    document.getElementById('questionnaireResult').innerHTML = 
+                        '<div class="result success">Draft saved! You can continue later.</div>';
+                }
+
+            } catch (error) {
+                document.getElementById('questionnaireResult').innerHTML = 
+                    `<div class="result error">Error saving: ${error.message}</div>`;
+            }
+        }
+
+        // AI Recommendations
+        async function getAIRecommendations() {
+            const resultDiv = document.getElementById('aiResult');
+            resultDiv.innerHTML = '<div class="result info">Getting AI recommendations...</div>';
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-fitness-advisor`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ userId: currentUser.id })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.aiRecommendations) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h4>AI Recommendations for ${data.user}:</h4>
+                            <div class="recommendations">${data.aiRecommendations}</div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.error || 'Failed to get recommendations');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Debug Scoring
+        async function debugScoring() {
+            const resultDiv = document.getElementById('debugResult');
+            resultDiv.innerHTML = '<div class="result info">Checking scoring...</div>';
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/questionnaire-debug`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ userId: currentUser.id })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    let debugHtml = `
+                        <div class="result info">
+                            <h4>Scoring Debug Info:</h4>
+                            <p><strong>Risk Score:</strong> ${data.risk_score}/21 → ${data.calculated_risk_level}</p>
+                            <p><strong>Fitness Score:</strong> ${data.fitness_score}/33 → Level ${data.calculated_fitness_level}</p>
+                            <p><strong>Total Answers:</strong> ${data.total_answers}</p>
+                            <details style="margin-top: 10px;">
+                                <summary>Detailed Scoring</summary>
+                                <pre style="font-size: 12px; overflow-x: auto;">${JSON.stringify(data.debug_scoring, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                    resultDiv.innerHTML = debugHtml;
+                } else {
+                    throw new Error(data.error || 'Failed to debug scoring');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">Debug Error: ${error.message}</div>`;
+            }
+        }
+
+        // Load saved theme
+        window.addEventListener('load', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                document.querySelector('.theme-toggle').textContent = '☀️ Light';
+            }
+        });
+    </script>
+</body>
+</html>
